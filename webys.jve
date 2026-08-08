@@ -1,0 +1,5 @@
+echo Webys starting...
+set app "Webys"
+set author "Jergan Studio"
+set version "1.0.0"
+alert("Webys - Jergan Studio")
