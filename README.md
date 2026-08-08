@@ -1,11 +1,13 @@
 # Webys
 
+**Author: Jergan Studio**
+
 Webys is a desktop web browser built with **Java** and **JavaScript**.
 
 ## Stack
 
-- Java 17+
-- JavaFX 21
+- Java 21
+- JavaFX 21.0.6
 - JavaFX WebView
 - JavaScript
 - Maven
@@ -26,7 +28,7 @@ Webys/
 
 ## Run
 
-Install JDK 17+ and Maven, then run:
+Install JDK 21+ and Maven, then run:
 
 ```bash
 mvn javafx:run
@@ -57,3 +59,7 @@ The bridge is intentionally small so more browser APIs can be added later.
 - Keyboard shortcuts
 - JavaScript/browser APIs
 - Windows packaging and installer
+
+## Author
+
+**Jergan Studio**
