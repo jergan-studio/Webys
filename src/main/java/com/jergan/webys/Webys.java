@@ -11,13 +11,7 @@ import netscape.javascript.JSObject;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Webys desktop shell.
- *
- * Websity-style workflow:
- * Java starts the native window -> loads web/index.html -> JavaScript controls
- * the browser shell through window.webys -> Java drives the browsing WebView.
- */
+/** Webys native runtime. JVE defines the project; HTML/CSS/JS define the UI. */
 public class Webys extends Application {
     private WebEngine uiEngine;
     private WebEngine browserEngine;
@@ -34,9 +28,7 @@ public class Webys extends Application {
         browserEngine = browserView.getEngine();
         browserEngine.setJavaScriptEnabled(true);
 
-        WebysBridge bridge = new WebysBridge();
-        bridge.setBrowser(browserEngine);
-        bridge.setUi(uiEngine);
+        WebysBridge bridge = new WebysBridge(browserEngine, uiEngine);
 
         uiEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
@@ -73,19 +65,21 @@ public class Webys extends Application {
         uiEngine.load(url.toExternalForm());
     }
 
-    public static class WebysBridge {
-        private WebEngine browser;
-        private WebEngine ui;
+    public static final class WebysBridge {
+        private final WebEngine browser;
+        private final WebEngine ui;
 
-        void setBrowser(WebEngine browser) { this.browser = browser; }
-        void setUi(WebEngine ui) { this.ui = ui; }
+        WebysBridge(WebEngine browser, WebEngine ui) {
+            this.browser = browser;
+            this.ui = ui;
+        }
 
         public String getName() { return "Webys"; }
         public String getVersion() { return "1.0.0"; }
         public String getAuthor() { return "Jergan Studio"; }
 
         public void navigate(String input) {
-            if (browser == null || input == null) return;
+            if (input == null) return;
             String value = input.trim();
             if (value.isEmpty()) return;
             if (!value.matches("^[a-zA-Z][a-zA-Z0-9+.-]*://.*$")) {
@@ -96,26 +90,17 @@ public class Webys extends Application {
             browser.load(value);
         }
 
-        public void back() {
-            if (canGoBack()) browser.getHistory().go(-1);
-            updateUi();
-        }
-
-        public void forward() {
-            if (canGoForward()) browser.getHistory().go(1);
-            updateUi();
-        }
-
-        public void reload() { if (browser != null) browser.reload(); }
+        public void back() { if (canGoBack()) browser.getHistory().go(-1); updateUi(); }
+        public void forward() { if (canGoForward()) browser.getHistory().go(1); updateUi(); }
+        public void reload() { browser.reload(); }
         public void home() { navigate("https://www.google.com"); }
         public void log(String message) { System.out.println("[Webys] " + message); }
-        public String getUrl() { return browser == null ? "" : browser.getLocation(); }
-        public String getTitle() { return browser == null ? "" : browser.getTitle(); }
-        public boolean canGoBack() { return browser != null && browser.getHistory().getCurrentIndex() > 0; }
-        public boolean canGoForward() { return browser != null && browser.getHistory().getCurrentIndex() < browser.getHistory().getEntries().size() - 1; }
+        public String getUrl() { return browser.getLocation(); }
+        public String getTitle() { return browser.getTitle(); }
+        public boolean canGoBack() { return browser.getHistory().getCurrentIndex() > 0; }
+        public boolean canGoForward() { return browser.getHistory().getCurrentIndex() < browser.getHistory().getEntries().size() - 1; }
 
         void updateUi() {
-            if (ui == null) return;
             try {
                 JSObject window = (JSObject) ui.executeScript("window");
                 window.call("webysLocationChanged", getUrl(), getTitle(), canGoBack(), canGoForward());
@@ -123,7 +108,6 @@ public class Webys extends Application {
         }
 
         void showError(String message) {
-            if (ui == null) return;
             try {
                 JSObject window = (JSObject) ui.executeScript("window");
                 window.call("webysError", message);
