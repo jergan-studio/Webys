@@ -2,4 +2,7 @@ echo Webys starting...
 set app "Webys"
 set author "Jergan Studio"
 set version "1.0.0"
-alert("Webys - Jergan Studio")
+set ui "web/index.html"
+set script "web/browser.js"
+set style "web/style.css"
+set lobbyProtocol "webys-lobby.json"
