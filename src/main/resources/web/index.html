@@ -7,15 +7,17 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="home">
-    <div class="logo">Webys</div>
-    <p class="tagline">A Java + JavaScript browser.</p>
+  <div class="toolbar">
+    <button id="back" title="Back">←</button>
+    <button id="forward" title="Forward">→</button>
+    <button id="reload" title="Reload">⟳</button>
+    <button id="home" title="Home">⌂</button>
     <form id="searchForm">
-      <input id="search" autocomplete="off" autofocus placeholder="Search the web or enter a URL">
-      <button type="submit">Search</button>
+      <input id="search" autocomplete="off" placeholder="Search the web or enter a URL">
     </form>
-    <div class="info" id="info">Webys 0.1.0</div>
-  </main>
+    <span class="brand">Webys</span>
+  </div>
+  <div class="status" id="status">Jergan Studio • Webys</div>
   <script src="browser.js"></script>
 </body>
 </html>
