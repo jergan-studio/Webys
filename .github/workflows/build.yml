@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
@@ -34,6 +34,12 @@ jobs:
           mkdir build\classes
           mkdir build\lib
           mvn -q dependency:copy-dependencies -DoutputDirectory=build\lib
+          rem Keep only Windows JavaFX runtime jars. The generic JavaFX jars can cause duplicate modules at startup.
+          del /Q build\lib\javafx-base-21.0.6.jar 2>nul
+          del /Q build\lib\javafx-controls-21.0.6.jar 2>nul
+          del /Q build\lib\javafx-graphics-21.0.6.jar 2>nul
+          del /Q build\lib\javafx-media-21.0.6.jar 2>nul
+          del /Q build\lib\javafx-web-21.0.6.jar 2>nul
           javac --module-path build\lib --add-modules javafx.controls,javafx.web -d build\classes src\main\java\com\jergan\webys\Webys.java
           xcopy /E /I /Y src\main\resources build\classes
 
@@ -124,6 +130,7 @@ jobs:
 
       - name: Publish Webys Latest release
         uses: softprops/action-gh-release@v2
+        continue-on-error: true
         with:
           tag_name: latest
           name: Webys Latest
