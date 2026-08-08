@@ -14,9 +14,9 @@ import java.nio.charset.StandardCharsets;
 /**
  * Webys desktop shell.
  *
- * Workflow is intentionally similar to Websity:
+ * Websity-style workflow:
  * Java starts the native window -> loads web/index.html -> JavaScript controls
- * the browser shell through the window.webys bridge -> Java drives WebView.
+ * the browser shell through window.webys -> Java drives the browsing WebView.
  */
 public class Webys extends Application {
     private WebEngine uiEngine;
@@ -26,6 +26,9 @@ public class Webys extends Application {
     public void start(Stage stage) {
         WebView uiView = new WebView();
         WebView browserView = new WebView();
+        uiView.setPrefHeight(78);
+        uiView.setMinHeight(78);
+        uiView.setMaxHeight(78);
 
         uiEngine = uiView.getEngine();
         browserEngine = browserView.getEngine();
@@ -66,9 +69,7 @@ public class Webys extends Application {
 
     private void loadLocalWeb(String resource) {
         var url = getClass().getResource(resource);
-        if (url == null) {
-            throw new IllegalStateException("Missing Webys web resource: " + resource);
-        }
+        if (url == null) throw new IllegalStateException("Missing Webys web resource: " + resource);
         uiEngine.load(url.toExternalForm());
     }
 
@@ -87,63 +88,38 @@ public class Webys extends Application {
             if (browser == null || input == null) return;
             String value = input.trim();
             if (value.isEmpty()) return;
-
             if (!value.matches("^[a-zA-Z][a-zA-Z0-9+.-]*://.*$")) {
-                if (value.contains(".") && !value.contains(" ")) {
-                    value = "https://" + value;
-                } else {
-                    value = "https://www.google.com/search?q=" + encode(value);
-                }
+                value = value.contains(".") && !value.contains(" ")
+                        ? "https://" + value
+                        : "https://www.google.com/search?q=" + encode(value);
             }
             browser.load(value);
         }
 
         public void back() {
-            if (browser != null && browser.getHistory().getCurrentIndex() > 0) browser.getHistory().go(-1);
+            if (canGoBack()) browser.getHistory().go(-1);
             updateUi();
         }
 
         public void forward() {
-            if (browser != null && browser.getHistory().getCurrentIndex() < browser.getHistory().getEntries().size() - 1) browser.getHistory().go(1);
+            if (canGoForward()) browser.getHistory().go(1);
             updateUi();
         }
 
-        public void reload() {
-            if (browser != null) browser.reload();
-        }
-
-        public void home() {
-            navigate("https://www.google.com");
-        }
-
-        public void log(String message) {
-            System.out.println("[Webys] " + message);
-        }
-
-        public String getUrl() {
-            return browser == null ? "" : browser.getLocation();
-        }
-
-        public String getTitle() {
-            return browser == null ? "" : browser.getTitle();
-        }
-
-        public boolean canGoBack() {
-            return browser != null && browser.getHistory().getCurrentIndex() > 0;
-        }
-
-        public boolean canGoForward() {
-            return browser != null && browser.getHistory().getCurrentIndex() < browser.getHistory().getEntries().size() - 1;
-        }
+        public void reload() { if (browser != null) browser.reload(); }
+        public void home() { navigate("https://www.google.com"); }
+        public void log(String message) { System.out.println("[Webys] " + message); }
+        public String getUrl() { return browser == null ? "" : browser.getLocation(); }
+        public String getTitle() { return browser == null ? "" : browser.getTitle(); }
+        public boolean canGoBack() { return browser != null && browser.getHistory().getCurrentIndex() > 0; }
+        public boolean canGoForward() { return browser != null && browser.getHistory().getCurrentIndex() < browser.getHistory().getEntries().size() - 1; }
 
         void updateUi() {
             if (ui == null) return;
             try {
                 JSObject window = (JSObject) ui.executeScript("window");
                 window.call("webysLocationChanged", getUrl(), getTitle(), canGoBack(), canGoForward());
-            } catch (Exception ignored) {
-                // UI may not be ready yet.
-            }
+            } catch (Exception ignored) { }
         }
 
         void showError(String message) {
@@ -154,12 +130,8 @@ public class Webys extends Application {
             } catch (Exception ignored) { }
         }
 
-        private String encode(String text) {
-            return URLEncoder.encode(text, StandardCharsets.UTF_8);
-        }
+        private String encode(String text) { return URLEncoder.encode(text, StandardCharsets.UTF_8); }
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public static void main(String[] args) { launch(args); }
 }
