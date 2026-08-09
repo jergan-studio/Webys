@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Webys",
+  "version": "1.0.0",
+  "identifier": "studio.jergan.webys",
+  "build": {
+    "frontendDist": "../src/main/resources/web"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Webys — Jergan Studio",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi"],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      }
+    }
+  }
+}
