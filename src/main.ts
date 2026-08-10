@@ -10,6 +10,7 @@ app.innerHTML = `
     <button id="reload">⟳</button>
     <button id="home">⌂</button>
     <input id="address" placeholder="Search or enter URL" autocomplete="off" />
+    <button id="go">Go</button>
     <span class="brand">Webys</span>
   </header>
   <main class="home">
@@ -23,6 +24,7 @@ const back = document.querySelector<HTMLButtonElement>("#back")!;
 const forward = document.querySelector<HTMLButtonElement>("#forward")!;
 const reload = document.querySelector<HTMLButtonElement>("#reload")!;
 const home = document.querySelector<HTMLButtonElement>("#home")!;
+const go = document.querySelector<HTMLButtonElement>("#go")!;
 
 function normalizeUrl(input: string): string {
   const value = input.trim();
@@ -32,20 +34,28 @@ function normalizeUrl(input: string): string {
   return `https://www.google.com/search?q=${encodeURIComponent(value)}`;
 }
 
-async function navigate(input: string) {
+async function navigate(input: string): Promise<void> {
   const url = normalizeUrl(input);
   address.value = url;
-  // Browser navigation will be moved into the Tauri WebView window as tabs are added.
-  console.log("Webys navigate:", url);
+  const label = `web-${Date.now()}`;
+  const webview = new WebviewWindow(label, {
+    url,
+    title: `Webys - ${url}`,
+    width: 1200,
+    height: 742,
+    resizable: true,
+  });
+  webview.once("tauri://error", (event) => console.error("Webys WebView error:", event));
 }
 
 address.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") navigate(address.value);
+  if (event.key === "Enter") void navigate(address.value);
 });
-
-back.addEventListener("click", () => console.log("Webys back"));
-forward.addEventListener("click", () => console.log("Webys forward"));
+go.addEventListener("click", () => void navigate(address.value));
+home.addEventListener("click", () => void navigate("https://www.google.com"));
+back.addEventListener("click", () => console.log("Webys back requested"));
+forward.addEventListener("click", () => console.log("Webys forward requested"));
 reload.addEventListener("click", () => location.reload());
-home.addEventListener("click", () => navigate("https://www.google.com"));
-
-void WebviewWindow;
+void back;
+void forward;
+void reload;
