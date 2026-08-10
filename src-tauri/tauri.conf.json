@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "identifier": "studio.jergan.webys",
   "build": {
-    "frontendDist": "../src/main/resources/web"
+    "frontendDist": "../dist"
   },
   "app": {
     "windows": [
