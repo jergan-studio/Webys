@@ -20,4 +20,4 @@ jar cfe Webys.jar Webys Webys.class
 java -jar Webys.jar
 ```
 
-The GitHub Actions release workflow builds `Webys.jar` automatically.
+The GitHub Actions workflow builds `Webys.jar` automatically for releases.
