@@ -1,65 +1,23 @@
 # Webys
 
-**Author: Jergan Studio**
+**Webys** is a simple Java browser launcher by **Jergan Studio**.
 
-Webys is a desktop web browser built with **Java** and **JavaScript**.
+## Run Webys
 
-## Stack
+Download `Webys.jar` from the latest GitHub release, then run:
 
-- Java 21
-- JavaFX 21.0.6
-- JavaFX WebView
-- JavaScript
-- Maven
-
-## Project structure
-
-```text
-Webys/
-├── pom.xml
-├── README.md
-└── src/main/
-    ├── java/com/jergan/webys/Webys.java
-    └── resources/web/
-        ├── index.html
-        ├── browser.js
-        └── style.css
+```powershell
+java -jar Webys.jar
 ```
 
-## Run
+You need Java installed on your computer.
 
-Install JDK 21+ and Maven, then run:
+## Build manually
 
-```bash
-mvn javafx:run
+```powershell
+javac Webys.java
+jar cfe Webys.jar Webys Webys.class
+java -jar Webys.jar
 ```
 
-Webys opens a desktop browser window with navigation controls, an address bar, page loading, and a JavaScript bridge.
-
-## Java ↔ JavaScript bridge
-
-The Java application exposes `window.webys` to loaded pages. The initial bridge provides:
-
-```javascript
-webys.getName();
-webys.getVersion();
-webys.log("Hello from JavaScript");
-```
-
-The bridge is intentionally small so more browser APIs can be added later.
-
-## Roadmap
-
-- Tabs
-- Bookmarks
-- History
-- Downloads
-- Webys settings
-- Custom new-tab page
-- Keyboard shortcuts
-- JavaScript/browser APIs
-- Windows packaging and installer
-
-## Author
-
-**Jergan Studio**
+The GitHub Actions release workflow builds `Webys.jar` automatically.
